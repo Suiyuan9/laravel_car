@@ -58,3 +58,123 @@ public function trashedDelete(id){
    $post->restore();重新保存
    return back();
 }
+
+抓auth去向
+app/Http/Controllers/Middleware/RedirectIfAuthenticated.php
+
+class RedirectIfAuthenticated
+{
+    public function handle($request, Closure $next, $guard = null)
+    {
+        if ($guard == "admin" && Auth::guard($guard)->check()) {
+            return redirect('/admin');
+        }
+        if ($guard == "blogger" && Auth::guard($guard)->check()) {
+            return redirect('/blogger');
+        }
+        if (Auth::guard($guard)->check()) {
+            return redirect('/home');
+        }
+
+        return $next($request);
+    }
+}
+
+抓权限事件
+app/Exceptions/Handler.php
+
+use Exception;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Auth\AuthenticationException;
+use Auth;
+class Handler extends ExceptionHandler
+{
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+        if ($request->is('admin') || $request->is('admin/*')) {
+            return redirect()->guest('/login/admin');
+        }
+        if ($request->is('blogger') || $request->is('blogger/*')) {
+            return redirect()->guest('/login/blogger');
+        }
+        return redirect()->guest(route('login'));
+    }
+}
+
+
+logout事件
+
+
+public function logout(Request $request)
+{
+    Auth::logout();
+ 
+    $request->session()->invalidate();
+ 
+    $request->session()->regenerateToken();
+ 
+    return redirect('/');
+}
+
+Setup Guard 方便辨认auth
+去config\auth.php
+找到↓
+return [
+ 
+    'defaults' => [
+        'guard' => 'web',
+        'passwords' => 'users',
+    ],
+ 
+ 
+    'guards' => [
+        'web' => [ //Laravel default guard name
+            'driver' => 'session', 
+            'provider' => 'users', // Laravel authenticate table/model name
+        ],
+         
+        'admin' => [  //Our Custom guard name "admin"
+            'driver' => 'session',  
+            'provider' => 'admins',  // Our authenticate table/model name
+        ],
+ 
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+        ],
+ 
+         
+    ],
+ 
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\User::class, //Laravel guard model slug
+        ],
+ 
+        'admins' => [  
+            'driver' => 'eloquent',  //Our custom eloquent
+            'model' => App\Model\Admin\Admin::class, //Our custom guard model slug
+        ],
+    ],
+ 
+    'passwords' => [
+        'users' => [
+            'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+ 
+        'admins' => [  // And here also
+            'provider' => 'admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+    ],
+ 
+];
+
+
