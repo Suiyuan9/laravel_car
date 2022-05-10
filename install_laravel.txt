@@ -178,3 +178,21 @@ return [
 ];
 
 
+
+vendor\laravel\framework\src\Illuminate\Auth\AuthManager.php其中的function guard
+public function guard($name = null)
+    {
+        $name = $name ?: $this->getDefaultDriver();
+
+        return $this->guards[$name] ?? $this->guards[$name] = $this->resolve($name);
+    }
+
+设定了get driver
+
+vendor\laravel\framework\src\Illuminate\Foundation\Exceptions\Handler.php 设定所以excep事件
+
+vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php 把facades class 设定起放在 facade.php
+
+vendor\laravel\ui\auth-backend\AuthenticatesUsers.php 设定user login logout register 那些
+
+
