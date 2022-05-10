@@ -1,0 +1,60 @@
+Install laravel
+
+-install xampp fist
+
+-after download composer and set up select browser C:\xampp\php
+
+-after that, find "edit the system environment variable" and click the button of" environment variables",after click in find the system variables of "path" to edit
+ make sure C:\xampp\php include the path if not click new to add it
+
+-open the vscode and change to the xampp C:\xampp\htdocs to run
+ 
+-input
+ composer global require laravel/installer
+
+-create project file
+composer create-project --prefer-dist laravel/laravel filename
+
+git dowload
+
+https://www.simplilearn.com/tutorials/git-tutorial/git-installation-on-windows
+
+git branch新创分支
+git常用命令
+https://www.simplilearn.com/tutorials/git-tutorial/git-installation-on-windows
+
+laravel 9 新东西
+1.route 新写法
+Route::controller(NameController::class)->group(function(){
+Route::get('/pots',''index);
+})
+
+2.str（）helper function
+Str：：of('hello')->upper() /return str('hello') ----这个会print hello
+->slug 空格位置出现-
+
+throw new \Exception('whoop') ----error出现这个
+
+Blade::render print string
+
+php artisan make:controller NameController --resource        -----auto create controller function
+php artisan make：controller NameController --resource --model=Name     ------set好controller 与 model 然后edit 那边自动放（Name $name）
+php artisan make: model Name -m      ----这个会出现migrate 和 model
+
+softdelet
+laravel 9 support softdelete (Illuminate\Database\Eloquent\SoftDeletes)trait
+
+在post model 加入Illuminate\Database\Eloquent\SoftDeletes   和   use softdelete
+
+controller例子
+public function trashedDelete(id){
+   $post=Post::onlyTrashed()->findOrFail($id);
+   $post->forceDelete();完全delete
+   return back();
+}
+
+public function trashedDelete(id){
+   $post=Post::onlyTrashed()->findOrFail($id);
+   $post->restore();重新保存
+   return back();
+}
