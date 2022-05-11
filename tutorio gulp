@@ -1,0 +1,113 @@
+tutorio glap
+
+gulp.js
+。npm install gulp-cli -g 輸入下面指令安裝全域的 Gulp-cli，目的是要讓使用者可以在任何地方透過 cli 指令(例如：gulp)來下指令。
+.换cd project name
+。npm install gulp -D
+。pipe=then
+。src 读取 dest 写 2者一起用
+。parallel合成与一起执行
+。npm install  --save-dev gulp-imagemin 压缩图片 src('src/images/*.').pipe(imagemin()).pipe(gulp.dest('dist/images')) 把图片压缩在dist里面的images file 里面
+
+gulp.task('testImagemin', function () {
+    gulp.src('src/img/*.{png,jpg,gif,ico}')
+        .pipe(imagemin({
+            optimizationLevel: 5, //类型：Number  默认：3  取值范围：0-7（优化等级）
+            progressive: true, //类型：Boolean 默认：false 无损压缩jpg图片
+            interlaced: true, //类型：Boolean 默认：false 隔行扫描gif进行渲染
+            multipass: true //类型：Boolean 默认：false 多次优化svg直到完全优化
+        }))
+        .pipe(gulp.dest('dist/img'));
+});
+
+
+
+。npm install  --save-dev gulp-sourcemaps对应位置映射的信息，文件转换成源码
+
+利用 sass 、typeScript 等其他语言编译成 css 或 JS 后，支持js，css，generic
+利用 webpack 等打包工具进行多文件合并后
+var gulp = require('gulp');
+var plugin1 = require('gulp-plugin1');
+var plugin2 = require('gulp-plugin2');
+var sourcemaps = require('gulp-sourcemaps');
+
+gulp.task('javascript', function() {
+  gulp.src('src/**/*.js')
+    .pipe(sourcemaps.init())  //标记 map 记录始发点
+      .pipe(plugin1())    //其他任务插件运行
+      .pipe(plugin2())      //其他任务插件运行
+    .pipe(sourcemaps.write())  //输出 .map 文件
+    .pipe(gulp.dest('dist'));  
+});
+
+。npm install  --save-dev gulp-concat 用于把多个文件合并为单个文件。我们可以用它来合并js或css文件，这样就能减少http的请求数了
+ .pipe(concat('all.js'))
+
+
+。npm install  --save-dev gulp-terser        JavaScript 转换编译器。
+
+。npm install  --save-dev gulp-postcss   运行器（runner）来 执行 CSS 文件的压缩工作（运行csscanon）
+
+。npm install  --save-dev gulp-cssnano   将压缩后的文件放到指定目录，以确保最终生成的文件 对生产环境来说体积是最小的插件
+
+。npm install  --save-dev gulp-cssnano autoprefixer autoprefixer自动添加兼容各大浏览器，-webkit-，-o-
+pipe（autoprefix（{
+browsers：['last 2 version'], 最新2个版本
+cascade：false
+}））；
+
+。npm install  --save-dev gulp-cssmin
+pipe(cssmin()); 通过cssmin将上一步.css去掉中间的空间，使它压缩格式
+  
+  //open gulpfile.js
+  const gulp=require('require');
+  const imagemin =require('gulp-imagemin');
+  const concat = require('gulp-concat');
+  const terser = require('gulp-terser');
+  const sourcemaps = require('gulp-sourcemaps');
+  const {src, parallel, dest, watch} =require('gulp');
+  const jsPath =''src/assest/js/**/*.js');
+  const cssPath = 'src/assest/js/**/*.css');
+  const postcss = require(gulp-postcss);
+  const autoprefix =require('autoprefix')
+  
+  function copyHtml(){
+  return ('src/*.html).pipe(gulp.dest('d')); 全部在src的html file copy 去 d file
+  }
+  
+  function imagsT（){
+  return ('src/images/*').pipe(imagemin()).pipe(gulp.dest('d/images')); 全部在src的images 里面 file copy与压缩 去 d 的image folder
+}
+
+funtion jsT（）{
+
+return src(jsPath)
+  .pipe(sourcemaps.init())
+  .pipe(concat('all.js'))
+  .pipe(terser())
+  .pipe(sourcemaps.write('.'))
+  .pipe(dest('dist/asset/js'))
+  
+  }
+  
+  function cssT（）{
+  
+  return src(cssPath)
+  .pipe(sourcemaps.init())
+  .pipe(concat('style.js'))
+  .pipe(postcss(([autoprefixer(),cssnano()]))
+  .pipe(sourcemaps.write('.'))
+  .pipe(dest('dist/asset/js'))
+  }
+  
+  function watchT（）{
+  watch（[cssPath,jsPath ],{interval:1000}, parallel(cssT,jsT)）;
+  
+  
+  exports.jsT=jsT;
+  exports.imagsT;imags;
+  module.exports={
+  copyHtml=copyHtml,
+  default = parallel(copyHtml,imagsT),
+  cssT= cssT,
+  };
